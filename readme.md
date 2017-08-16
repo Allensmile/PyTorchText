@@ -9,11 +9,12 @@
 pip2 install -r requirements.txt
 ```
 主要包括以下工具:
-    - PyTorch工具：[PyTorchNet](https://github.com/pytorch/tnt)
-    - 进度条工具：[tqdm](https://github.com/tqdm/tqdm)
-    - 命令行工具：[fire](github.com/google/python-fire)
-    - 可视化工具: [visdom](https://github.com/facebookresearch/visdom)
-    - 交互式调试工具: [ipdb](https://github.com/gotcha/ipdb)
+
+- PyTorch工具：[PyTorchNet](https://github.com/pytorch/tnt)
+- 进度条工具：[tqdm](https://github.com/tqdm/tqdm)
+- 命令行工具：[fire](github.com/google/python-fire)
+- 可视化工具: [visdom](https://github.com/facebookresearch/visdom)
+- 交互式调试工具: [ipdb](https://github.com/gotcha/ipdb)
 
 数据预处理中还用到了`tf.contrib.keras.preprocessing.sequence.pad_sequences`,需要安装TensorFlow,当然`numpy`是必不可少的.
 
@@ -26,7 +27,7 @@ python2 -m visdom.server
 
 ## 2. 数据预处理
 
-**注意修改文件路径**
+__注意修改文件路径__
 
 ###  2.1 词向量转成numpy数组
 ```sh
@@ -47,14 +48,15 @@ python scripts/data_process/label2id.py main question_topic_train_set.txt labels
 ```
 ### 2.4 生成验证集
 
-从训练集中抽取一部分的数据生成验证集, 这部分代码是从ipython中备份的,**注意修改代码中的数据存放路径** 
-```
+从训练集中抽取一部分的数据生成验证集, 这部分代码是从ipython中备份的,__注意修改代码中的数据存放路径__ .
+
+```sh
 python scripts/data_process/get_val.py 
 ``` 
 
 ## 3. 训练模型
 
-**注意修改`config.py`中文件的路径**
+** 注意修改`config.py`中文件的路径 **
 
 主要用到了五个模型
 - CNN:`models/MultiCNNTextBNDeep.py`
@@ -105,7 +107,7 @@ python2 main.py main --max_epoch=2 --plot_every=100 --env='LSTMText-word-ft' --m
 ### 3.3 各个模型的线下分数
 根据本人的经验,线下分数会比线上低5-6个千分点,需要把这里的分数加上5-6个千分点才是线上真实的分数
 
-|model-|-score-|
+|model|score|
 :---:|:----:
 CNN_word|0.4103
 RNN_word|0.4119
@@ -131,17 +133,19 @@ RCNN_char_aug|0.39854
 - `models/MultiModelAll2`:主要思路是,把多个很优秀的模型,并行接在一起,然后接着训.一开始分数会下降的很厉害,然后慢慢的分数会开始上升
 - `models/MultiModelAll`: 主要思路是,把多个很优秀的模型,并行接在一起,并且重新初始化他们的embedding为最初给的那个词向量,分数会严重下降,但是对模型融合有提升
 
-MultiModel的分数,远小于这几个模型直接融合,但是对于融合有提升.
+MultiModel的分数,远小于这几个模型直接融合的分数,但是对于最终的融合有帮助.
 
 ## 4 融合与提交csv
 ### 4.1 测试
 根据上一步生成的多个最佳模型，对测试集进行测试，将测试结果保存成文件，用以融合,请注意修改模型保存的路径。生成的结果是对测试集(或验证集)的所有样本属于各个类的概率. 如果是对测试集,那么生成的结果就是一个`217400*1999`的矩阵,如果是对验证集,生成的结果就是一个`200000*1999`的矩阵.
 
 需要指定:
-    - model: 模型名字,包括`LSTMText`,`RCNN`,`MultiCNNTextBNDeep`,`FastText3`,`CNNText_inception`
-    - model-path: 模型保存的路径
-    - result-path: 结果保存路径
-    - val: 为True,会对验证集进行测试,为False会对测试集进行测试.
+
+- model: 模型名字,包括`LSTMText`,`RCNN`,`MultiCNNTextBNDeep`,`FastText3`,`CNNText_inception`
+- model-path: 模型保存的路径
+- result-path: 结果保存路径
+- val: 为True,会对验证集进行测试,为False会对测试集进行测试.
+
 ```sh
 # LSTM
 python2 test.1.py main --model='LSTMText'  --batch-size=512  --model-path='checkpoints/LSTMText_word_0.411994005382' --result-path='/data_ssd/zhihu/result/LSTMText0.4119_word_test.pth'  --val=False --zhuge=True
